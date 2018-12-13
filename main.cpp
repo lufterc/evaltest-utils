@@ -9,8 +9,8 @@ int main() {
     hmap.put(24, 100);
     hmap.put(32, 200);
 
-    cout << hmap.get(24)->value << endl;
-    cout << hmap.get(32)->value << endl;
+    cout << hmap.get(24)->val << endl;
+    cout << hmap.get(32)->val << endl;
 
     return 0;
 }

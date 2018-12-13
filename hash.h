@@ -1,27 +1,29 @@
 #pragma once
 
-template <typename K, unsigned long TABLE_SIZE>
+typedef unsigned long Hash;
+
+template <typename K, Hash TSIZE>
 struct KeyHash {
-    unsigned long operator()(const K& key) {
-        return reinterpret_cast<unsigned long>(key) % TABLE_SIZE;
+    Hash operator()(const K& key) {
+        return reinterpret_cast<Hash>(key) % TSIZE;
     }
 };
 
-template <typename K, typename V, unsigned long TABLE_SIZE = 1024,
-          typename F = KeyHash<K, TABLE_SIZE>>
+template <typename K, typename V, Hash TSIZE = 1024,
+          typename F = KeyHash<K, TSIZE>>
 class HashMap {
 public:
     struct HashNode {
-        HashNode(K key, V value) : key(key), value(value), next(0) {}
-        K key; V value; HashNode *next;
+        HashNode(K key, V val) : key(key), val(val), next(0) {}
+        K key; V val; HashNode *next;
     };
 
     HashMap() {
-        table = new HashNode *[TABLE_SIZE](); // construct zero initialized hash table of size
+        table = new HashNode *[TSIZE](); // construct zero initialized hash table of size
     }
 
     ~HashMap() {
-        for (unsigned long i = 0; i < TABLE_SIZE; ++i) { // destroy all buckets one by one
+        for (Hash i = 0; i < TSIZE; ++i) { // destroy all buckets one by one
             HashNode *entry = table[i];
             while (entry != 0) {
                 HashNode *prev = entry;
@@ -44,8 +46,8 @@ public:
         return 0;
     }
 
-    void put(const K &key, const V &value) {
-        unsigned long hashValue = hashFunc(key);
+    void put(const K &key, const V &val) {
+        Hash hashValue = hashFunc(key);
         HashNode *prev = 0;
         HashNode *entry = table[hashValue];
 
@@ -55,17 +57,17 @@ public:
         }
 
         if (entry == 0) {
-            entry = new HashNode(key, value);
+            entry = new HashNode(key, val);
             if (prev == 0) {
                 table[hashValue] = entry; // insert as first bucket
             }
             else { prev->next = entry; }
         }
-        else { entry->value = value; } // just update the value
+        else { entry->val = val; } // just update the value
     }
 
     void remove(const K &key) {
-        unsigned long hashValue = hashFunc(key);
+        Hash hashValue = hashFunc(key);
         HashNode *prev = 0;
         HashNode *entry = table[hashValue];
 
