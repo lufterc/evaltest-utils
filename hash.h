@@ -1,39 +1,8 @@
 #pragma once
 
-// Hash node class template
 template <typename K, typename V>
-class HashNode {
-public:
-    HashNode(const K &key, const V &value) :
-    key(key), value(value), next(0) {
-    }
-
-    K getKey() const {
-        return key;
-    }
-
-    V getValue() const {
-        return value;
-    }
-
-    void setValue(V value) {
-        HashNode::value = value;
-    }
-
-    HashNode *getNext() const {
-        return next;
-    }
-
-    void setNext(HashNode *next) {
-        HashNode::next = next;
-    }
-
-private:
-    // key-value pair
-    K key;
-    V value;
-    // next bucket with the same key
-    HashNode *next;
+struct HashNode {
+    K key; V value; HashNode *next;
 };
 
 template <typename K, unsigned long TABLE_SIZE>
@@ -44,7 +13,8 @@ struct KeyHash {
     }
 };
 
-template <typename K, typename V, unsigned long TABLE_SIZE = 1024, typename F = KeyHash<K, TABLE_SIZE>>
+template <typename K, typename V, unsigned long TABLE_SIZE = 1024,
+          typename F = KeyHash<K, TABLE_SIZE>>
 class HashMap {
 public:
     HashMap() {
@@ -58,7 +28,7 @@ public:
             HashNode<K, V> *entry = table[i];
             while (entry != 0) {
                 HashNode<K, V> *prev = entry;
-                entry = entry->getNext();
+                entry = entry->next;
                 delete prev;
             }
             table[i] = 0;
@@ -72,11 +42,11 @@ public:
         HashNode<K, V> *entry = table[hashValue];
 
         while (entry != 0) {
-            if (entry->getKey() == key) {
-                value = entry->getValue();
+            if (entry->key == key) {
+                value = entry->value;
                 return true;
             }
-            entry = entry->getNext();
+            entry = entry->next;
         }
         return false;
     }
@@ -86,9 +56,9 @@ public:
         HashNode<K, V> *prev = 0;
         HashNode<K, V> *entry = table[hashValue];
 
-        while (entry != 0 && entry->getKey() != key) {
+        while (entry != 0 && entry->key != key) {
             prev = entry;
-            entry = entry->getNext();
+            entry = entry->next;
         }
 
         if (entry == 0) {
@@ -97,11 +67,11 @@ public:
                 // insert as first bucket
                 table[hashValue] = entry;
             } else {
-                prev->setNext(entry);
+                prev->next = entry;
             }
         } else {
             // just update the value
-            entry->setValue(value);
+            entry->value = value;
         }
     }
 
@@ -110,9 +80,9 @@ public:
         HashNode<K, V> *prev = 0;
         HashNode<K, V> *entry = table[hashValue];
 
-        while (entry != 0 && entry->getKey() != key) {
+        while (entry != 0 && entry->next != key) {
             prev = entry;
-            entry = entry->getNext();
+            entry = entry->next;
         }
 
         if (entry == 0) {
@@ -122,16 +92,15 @@ public:
         else {
             if (prev == 0) {
                 // remove first bucket of the list
-                table[hashValue] = entry->getNext();
+                table[hashValue] = entry->next;
             } else {
-                prev->setNext(entry->getNext());
+                prev->next = entry->next;
             }
             delete entry;
         }
     }
 
 private:
-    // hash table
     HashNode<K, V> **table;
     F hashFunc;
 };
