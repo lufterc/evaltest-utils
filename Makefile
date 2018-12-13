@@ -1,2 +1,2 @@
 all:
-	g++ main.cpp -o main
+	g++ -Wall -O0 main.cpp -o main

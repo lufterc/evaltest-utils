@@ -12,7 +12,7 @@ template <typename K, typename V, unsigned long TABLE_SIZE = 1024,
 class HashMap {
 public:
     struct HashNode {
-        HashNode(K key, V value) : key(key), value(value), next(next) {}
+        HashNode(K key, V value) : key(key), value(value), next(0) {}
         K key; V value; HashNode *next;
     };
 
@@ -21,7 +21,7 @@ public:
     }
 
     ~HashMap() {
-        for (int i = 0; i < TABLE_SIZE; ++i) { // destroy all buckets one by one
+        for (unsigned long i = 0; i < TABLE_SIZE; ++i) { // destroy all buckets one by one
             HashNode *entry = table[i];
             while (entry != 0) {
                 HashNode *prev = entry;
@@ -33,18 +33,15 @@ public:
         delete [] table; // destroy the hash table
     }
 
-    bool get(const K &key, V &value) {
-        unsigned long hashValue = hashFunc(key);
-        HashNode *entry = table[hashValue];
-
+    HashNode* get(const K &key) {
+        HashNode *entry = table[hashFunc(key)];
         while (entry != 0) {
             if (entry->key == key) {
-                value = entry->value;
-                return true;
+                return entry;
             }
             entry = entry->next;
         }
-        return false;
+        return 0;
     }
 
     void put(const K &key, const V &value) {
