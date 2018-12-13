@@ -2,8 +2,7 @@
 
 template <typename K, unsigned long TABLE_SIZE>
 struct KeyHash {
-    unsigned long operator()(const K& key) const
-    {
+    unsigned long operator()(const K& key) {
         return reinterpret_cast<unsigned long>(key) % TABLE_SIZE;
     }
 };
@@ -18,13 +17,11 @@ public:
     };
 
     HashMap() {
-        // construct zero initialized hash table of size
-        table = new HashNode *[TABLE_SIZE]();
+        table = new HashNode *[TABLE_SIZE](); // construct zero initialized hash table of size
     }
 
     ~HashMap() {
-        // destroy all buckets one by one
-        for (int i = 0; i < TABLE_SIZE; ++i) {
+        for (int i = 0; i < TABLE_SIZE; ++i) { // destroy all buckets one by one
             HashNode *entry = table[i];
             while (entry != 0) {
                 HashNode *prev = entry;
@@ -33,8 +30,7 @@ public:
             }
             table[i] = 0;
         }
-        // destroy the hash table
-        delete [] table;
+        delete [] table; // destroy the hash table
     }
 
     bool get(const K &key, V &value) {
@@ -64,15 +60,11 @@ public:
         if (entry == 0) {
             entry = new HashNode(key, value);
             if (prev == 0) {
-                // insert as first bucket
-                table[hashValue] = entry;
-            } else {
-                prev->next = entry;
+                table[hashValue] = entry; // insert as first bucket
             }
-        } else {
-            // just update the value
-            entry->value = value;
+            else { prev->next = entry; }
         }
+        else { entry->value = value; } // just update the value
     }
 
     void remove(const K &key) {
@@ -85,17 +77,11 @@ public:
             entry = entry->next;
         }
 
-        if (entry == 0) {
-            // key not found
-            return;
-        }
+        if (entry == 0) { return; } // key not found
+
         else {
-            if (prev == 0) {
-                // remove first bucket of the list
-                table[hashValue] = entry->next;
-            } else {
-                prev->next = entry->next;
-            }
+            if (prev == 0) { table[hashValue] = entry->next; } // remove first bucket of the list
+            else { prev->next = entry->next; }
             delete entry;
         }
     }
