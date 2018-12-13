@@ -1,10 +1,5 @@
 #pragma once
 
-template <typename K, typename V>
-struct HashNode {
-    K key; V value; HashNode *next;
-};
-
 template <typename K, unsigned long TABLE_SIZE>
 struct KeyHash {
     unsigned long operator()(const K& key) const
@@ -17,17 +12,22 @@ template <typename K, typename V, unsigned long TABLE_SIZE = 1024,
           typename F = KeyHash<K, TABLE_SIZE>>
 class HashMap {
 public:
+    struct HashNode {
+        HashNode(K key, V value) : key(key), value(value), next(next) {}
+        K key; V value; HashNode *next;
+    };
+
     HashMap() {
         // construct zero initialized hash table of size
-        table = new HashNode<K, V> *[TABLE_SIZE]();
+        table = new HashNode *[TABLE_SIZE]();
     }
 
     ~HashMap() {
         // destroy all buckets one by one
         for (int i = 0; i < TABLE_SIZE; ++i) {
-            HashNode<K, V> *entry = table[i];
+            HashNode *entry = table[i];
             while (entry != 0) {
-                HashNode<K, V> *prev = entry;
+                HashNode *prev = entry;
                 entry = entry->next;
                 delete prev;
             }
@@ -39,7 +39,7 @@ public:
 
     bool get(const K &key, V &value) {
         unsigned long hashValue = hashFunc(key);
-        HashNode<K, V> *entry = table[hashValue];
+        HashNode *entry = table[hashValue];
 
         while (entry != 0) {
             if (entry->key == key) {
@@ -53,8 +53,8 @@ public:
 
     void put(const K &key, const V &value) {
         unsigned long hashValue = hashFunc(key);
-        HashNode<K, V> *prev = 0;
-        HashNode<K, V> *entry = table[hashValue];
+        HashNode *prev = 0;
+        HashNode *entry = table[hashValue];
 
         while (entry != 0 && entry->key != key) {
             prev = entry;
@@ -62,7 +62,7 @@ public:
         }
 
         if (entry == 0) {
-            entry = new HashNode<K, V>(key, value);
+            entry = new HashNode(key, value);
             if (prev == 0) {
                 // insert as first bucket
                 table[hashValue] = entry;
@@ -77,8 +77,8 @@ public:
 
     void remove(const K &key) {
         unsigned long hashValue = hashFunc(key);
-        HashNode<K, V> *prev = 0;
-        HashNode<K, V> *entry = table[hashValue];
+        HashNode *prev = 0;
+        HashNode *entry = table[hashValue];
 
         while (entry != 0 && entry->next != key) {
             prev = entry;
@@ -101,6 +101,6 @@ public:
     }
 
 private:
-    HashNode<K, V> **table;
+    HashNode **table;
     F hashFunc;
 };
