@@ -19,29 +19,27 @@ public:
     };
 
     HashMap() {
-        table = new HashNode *[TSIZE](); // construct zero initialized hash table of size
+        table = new HashNode *[TSIZE]();                    // construct zero initialized hash table of size
     }
 
     ~HashMap() {
-        for (Hash i = 0; i < TSIZE; ++i) { // destroy all buckets one by one
-            HashNode *entry = table[i];
-            while (entry != 0) {
-                HashNode *prev = entry;
-                entry = entry->next;
+        for (Hash i = 0; i < TSIZE; ++i) {                  // destroy all buckets one by one
+            HashNode *n = table[i];
+            while (n != 0) {
+                HashNode *prev = n;
+                n = n->next;
                 delete prev;
             }
             table[i] = 0;
         }
-        delete [] table; // destroy the hash table
+        delete [] table;                                    // destroy the hash table
     }
 
     HashNode* get(const K &key) {
-        HashNode *entry = table[hashFunc(key)];
-        while (entry != 0) {
-            if (entry->key == key) {
-                return entry;
-            }
-            entry = entry->next;
+        HashNode *n = table[hashFunc(key)];
+        while (n != 0) {
+            if (n->key == key) { return n; }
+            n = n->next;
         }
         return 0;
     }
@@ -49,43 +47,36 @@ public:
     void put(const K &key, const V &val) {
         Hash hashValue = hashFunc(key);
         HashNode *prev = 0;
-        HashNode *entry = table[hashValue];
+        HashNode *n = table[hashValue];
 
-        while (entry != 0 && entry->key != key) {
-            prev = entry;
-            entry = entry->next;
+        while (n != 0 && n->key != key) {
+            prev = n;
+            n = n->next;
         }
 
-        if (entry == 0) {
-            entry = new HashNode(key, val);
-            if (prev == 0) {
-                table[hashValue] = entry; // insert as first bucket
-            }
-            else { prev->next = entry; }
+        if (n == 0) {
+            n = new HashNode(key, val);
+            if (prev == 0) { table[hashValue] = n; }        // insert as first bucket
+            else { prev->next = n; }
         }
-        else { entry->val = val; } // just update the value
+        else { n->val = val; }                              // just update the value
     }
 
     void remove(const K &key) {
         Hash hashValue = hashFunc(key);
         HashNode *prev = 0;
-        HashNode *entry = table[hashValue];
+        HashNode *n = table[hashValue];
 
-        while (entry != 0 && entry->next != key) {
-            prev = entry;
-            entry = entry->next;
-        }
+        while (n != 0 && n->next != key) { prev = n; n = n->next; }
 
-        if (entry == 0) { return; } // key not found
-
+        if (n == 0) { return; }                             // key not found
         else {
-            if (prev == 0) { table[hashValue] = entry->next; } // remove first bucket of the list
-            else { prev->next = entry->next; }
-            delete entry;
+            if (prev == 0) { table[hashValue] = n->next; }  // remove first bucket of the list
+            else { prev->next = n->next; }
+            delete n;
         }
     }
 
 private:
-    HashNode **table;
-    F hashFunc;
+    HashNode **table; F hashFunc;
 };
