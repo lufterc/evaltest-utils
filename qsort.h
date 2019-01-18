@@ -35,13 +35,13 @@ void quickSort(T arr[], int l, int h) {          // arr[] --> Array to be sorted
         int p = partition(arr, l, h);            // set pivot element at its correct position in sorted array
 
         if (p - 1 > l) {                         // if there are elements on left side of pivot, then push left side to stack
-            stack[ ++top ] = l;
-            stack[ ++top ] = p - 1;
+            stack[++top] = l;
+            stack[++top] = p - 1;
         }
 
-        if (p+1 < h) {                           // if there are elements on right side of pivot, then push right side to stack
-            stack[ ++top ] = p + 1;
-            stack[ ++top ] = h;
+        if (p + 1 < h) {                         // if there are elements on right side of pivot, then push right side to stack
+            stack[++top] = p + 1;
+            stack[++top] = h;
         }
     }
 }
