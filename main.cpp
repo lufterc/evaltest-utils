@@ -1,5 +1,6 @@
 #include "hash.h"
 #include "qsort.h"
+#include "bsearch.h"
 #include <iostream>
 #include <cassert>
 
@@ -16,6 +17,9 @@ int main() {
     double arr[] = { 0.5, 1.2, 0.3 };
     quickSort(arr, 0, 2);
     cout << arr[0] << endl;
+
+    int sr = binarySearch(arr, 3, 1.2);
+    cout << sr << endl;
 
     return 0;
 }
